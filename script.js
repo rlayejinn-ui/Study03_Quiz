@@ -37,6 +37,14 @@ function 판만들기(카테고리) {
   return 섞기(해당문항).map(출제문항만들기);
 }
 
+// 오답 3개 중 무작위 2개의 위치를 돌려준다 (힌트용).
+function 지울보기고르기(출제문항) {
+  const 오답위치 = 출제문항.보기
+    .map((보기, 위치) => (보기.정답여부 ? -1 : 위치))
+    .filter(위치 => 위치 >= 0);
+  return 섞기(오답위치).slice(0, 2);
+}
+
 // 맞히고 힌트를 썼으면 힌트후점수, 맞히면 맞힘점수, 틀리면 0
 function 점수계산(모드, 맞힘, 힌트썼음) {
   const 설정 = 모드설정[모드];
@@ -178,6 +186,9 @@ function 문제그리기() {
     return 버튼;
   }));
   document.getElementById("타이머").hidden = 모드설정[상태.모드].제한시간 === null;
+  const 힌트버튼 = document.getElementById("힌트버튼");
+  힌트버튼.hidden = !모드설정[상태.모드].힌트;
+  힌트버튼.disabled = false;
   document.getElementById("해설영역").hidden = true;
 }
 
@@ -281,6 +292,14 @@ function 채점하기(위치) {
   해설보이기(위치, 맞힘, 획득점수);
 }
 
+function 힌트쓰기() {
+  if (!모드설정[상태.모드].힌트 || 상태.해설중 || 상태.힌트사용) return;
+  상태.힌트사용 = true;
+  const 버튼들 = document.querySelectorAll("#보기목록 button");
+  지울보기고르기(현재문항()).forEach(위치 => { 버튼들[위치].hidden = true; });
+  document.getElementById("힌트버튼").disabled = true;
+}
+
 function 다음으로() {
   상태.현재번호 += 1;
   if (상태.현재번호 >= 상태.출제목록.length) {
@@ -308,6 +327,7 @@ document.getElementById("그만하기버튼").addEventListener("click", 그만�
 document.getElementById("다시하기버튼").addEventListener("click", () => 판시작(상태.모드, 상태.카테고리));
 document.getElementById("처음으로버튼").addEventListener("click", 처음으로);
 document.getElementById("모드처음으로버튼").addEventListener("click", 처음으로);
+document.getElementById("힌트버튼").addEventListener("click", 힌트쓰기);
 
 function 시작하기() {
   상태초기화();
