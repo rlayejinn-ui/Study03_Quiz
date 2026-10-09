@@ -253,5 +253,18 @@ document.getElementById("그만하기버튼").addEventListener("click", 그만�
 document.getElementById("다시하기버튼").addEventListener("click", () => 판시작(상태.모드, 상태.카테고리));
 document.getElementById("처음으로버튼").addEventListener("click", 처음으로);
 
-상태초기화();
-시작화면그리기();
+function 시작하기() {
+  상태초기화();
+  if (typeof 문항목록 === "undefined") {
+    오류화면그리기(["questions.js를 읽지 못했습니다. 파일이 index.html과 같은 폴더에 있는지, 내용에 문법 오류가 없는지 확인하세요."]);
+    return;
+  }
+  const 오류목록 = 형식점검(문항목록);
+  if (오류목록.length > 0) {
+    오류화면그리기(오류목록);
+  } else {
+    시작화면그리기();
+  }
+}
+
+시작하기();
