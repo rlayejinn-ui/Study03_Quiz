@@ -74,3 +74,6 @@ select:focus-visible { outline: 3px solid #f5a623; outline-offset: 2px; }
 .모드버튼 { text-align: left; display: grid; gap: 0.25rem; }
 .모드버튼 .규칙 { color: #52606d; font-size: 0.9rem; }
 .모드버튼 .기록안됨 { color: var(--틀림); font-size: 0.9rem; }
+
+.타이머 { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.75rem; }
+.타이머.급함 { color: var(--틀림); }

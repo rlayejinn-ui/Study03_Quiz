@@ -143,6 +143,17 @@ function 모드화면그리기(카테고리) {
   화면보이기("모드");
 }
 
+function 남은밀리초() {
+  return 상태.마감시각 - Date.now();
+}
+
+function 남은시간그리기() {
+  const 표시 = document.getElementById("타이머");
+  const 초 = Math.max(0, Math.ceil(남은밀리초() / 1000));
+  표시.textContent = `남은 시간: ${초}초`;
+  표시.classList.toggle("급함", 초 <= 5);
+}
+
 function 오류화면그리기(오류목록) {
   document.getElementById("오류목록").replaceChildren(...오류목록.map(문장 => {
     const 항목 = document.createElement("li");
@@ -166,6 +177,7 @@ function 문제그리기() {
     버튼.addEventListener("click", () => 채점하기(위치));
     return 버튼;
   }));
+  document.getElementById("타이머").hidden = 모드설정[상태.모드].제한시간 === null;
   document.getElementById("해설영역").hidden = true;
 }
 
@@ -228,14 +240,27 @@ function 판시작(모드, 카테고리) {
   문제내기();
 }
 
+// 마감 시각과 현재 시각의 차이로 계산한다 (탭이 백그라운드여도 시간이 어긋나지 않음).
+function 타이머시작() {
+  const 제한 = 모드설정[상태.모드].제한시간;
+  if (제한 === null) return;
+  상태.마감시각 = Date.now() + 제한 * 1000;
+  남은시간그리기();
+  상태.타이머 = setInterval(() => {
+    남은시간그리기();
+    if (남은밀리초() <= 0) 채점하기(null);
+  }, 200);
+}
+
 function 문제내기() {
+  타이머끄기();
   상태.해설중 = false;
   상태.힌트사용 = false;
   화면보이기("문제");
   문제그리기();
+  타이머시작();
 }
 
-// 1단계에는 타이머가 없다. 2단계에서 내용이 채워진다.
 function 타이머끄기() {
   if (상태.타이머 !== null) {
     clearInterval(상태.타이머);
