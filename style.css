@@ -1,0 +1,72 @@
+:root {
+  --글자: #1f2933;
+  --배경: #f5f7fa;
+  --카드: #ffffff;
+  --테두리: #cbd2d9;
+  --강조: #2f5fd0;
+  --맞음: #1b7a3a;
+  --맞음배경: #e3f6e8;
+  --틀림: #b42318;
+  --틀림배경: #fdecea;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  color: var(--글자);
+  background: var(--배경);
+  line-height: 1.6;
+}
+
+main { max-width: 40rem; margin: 0 auto; padding: 1rem; }
+
+section {
+  background: var(--카드);
+  border: 1px solid var(--테두리);
+  border-radius: 12px;
+  padding: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+h1, h2 { margin-top: 0; }
+
+button {
+  font: inherit;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--강조);
+  border-radius: 8px;
+  background: var(--카드);
+  color: var(--강조);
+  cursor: pointer;
+}
+button:hover:not(:disabled) { background: #eaf0ff; }
+button:disabled { cursor: default; }
+button:focus-visible,
+input:focus-visible,
+select:focus-visible { outline: 3px solid #f5a623; outline-offset: 2px; }
+
+.버튼줄 { display: grid; gap: 0.75rem; }
+.윗줄 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.안내 { color: #52606d; }
+.큰점수 { font-size: 2rem; font-weight: 700; margin: 0.5rem 0; }
+
+.보기목록 { display: grid; gap: 0.75rem; }
+.보기 { width: 100%; text-align: left; color: var(--글자); border-color: var(--테두리); }
+.보기:disabled:not(.정답):not(.오답) { opacity: 0.6; }
+.보기.정답 { background: var(--맞음배경); border: 2px solid var(--맞음); color: var(--맞음); font-weight: 700; }
+.보기.오답 { background: var(--틀림배경); border: 2px solid var(--틀림); color: var(--틀림); font-weight: 700; }
+
+#해설영역 { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--테두리); }
+.맞음 { color: var(--맞음); font-weight: 700; }
+.틀림 { color: var(--틀림); font-weight: 700; }

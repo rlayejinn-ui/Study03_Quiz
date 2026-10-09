@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>상식 퀴즈</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <section id="화면-시작" hidden>
+      <h1>상식 퀴즈</h1>
+      <p class="안내">연습 모드 · 순위표에 기록되지 않음</p>
+      <div id="카테고리버튼들" class="버튼줄"></div>
+    </section>
+
+    <section id="화면-문제" hidden>
+      <div class="윗줄">
+        <span id="문제카테고리"></span>
+        <span id="문제진행"></span>
+        <span id="문제점수"></span>
+        <button id="그만하기버튼" type="button">그만하기</button>
+      </div>
+      <h2 id="문제문장"></h2>
+      <div id="보기목록" class="보기목록"></div>
+      <div id="해설영역" hidden>
+        <p id="정오표시" role="status"></p>
+        <p id="획득점수줄"></p>
+        <p id="정답안내"></p>
+        <p id="해설글"></p>
+        <p id="출처글" class="안내"></p>
+        <button id="다음버튼" type="button">다음</button>
+      </div>
+    </section>
+
+    <section id="화면-결과" hidden>
+      <h2>결과</h2>
+      <p id="결과점수" class="큰점수"></p>
+      <p id="결과안내" class="안내">순위표에 기록되지 않음</p>
+      <div class="버튼줄">
+        <button id="다시하기버튼" type="button">다시 하기</button>
+        <button id="처음으로버튼" type="button">처음으로</button>
+      </div>
+    </section>
+
+    <section id="화면-오류" hidden>
+      <h2>문항 데이터를 확인해 주세요</h2>
+      <ul id="오류목록"></ul>
+    </section>
+  </main>
+
+  <script src="questions.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
