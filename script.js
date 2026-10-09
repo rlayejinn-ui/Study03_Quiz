@@ -45,6 +45,11 @@ function 지울보기고르기(출제문항) {
   return 섞기(오답위치).slice(0, 2);
 }
 
+// 틀린 출제 문항으로 다시 풀 판을 만든다 (문항 순서와 보기 순서를 다시 섞는다. 원본은 그대로).
+function 다시풀기판만들기(오답목록) {
+  return 섞기(오답목록).map(문항 => ({ ...문항, 보기: 섞기(문항.보기) }));
+}
+
 // 맞히고 힌트를 썼으면 힌트후점수, 맞히면 맞힘점수, 틀리면 0
 function 점수계산(모드, 맞힘, 힌트썼음) {
   const 설정 = 모드설정[모드];
@@ -173,7 +178,8 @@ function 오류화면그리기(오류목록) {
 
 function 문제그리기() {
   const 문항 = 현재문항();
-  document.getElementById("문제카테고리").textContent = `${상태.카테고리} · ${상태.모드}`;
+  document.getElementById("문제카테고리").textContent =
+    `${상태.카테고리} · ${상태.모드}` + (상태.다시풀기중 ? " · 틀린 문제 다시 풀기" : "");
   document.getElementById("문제진행").textContent = `${상태.현재번호 + 1} / ${상태.출제목록.length}`;
   점수그리기();
   document.getElementById("문제문장").textContent = 문항.문제;
@@ -235,6 +241,15 @@ function 결과그리기() {
   const 설정 = 모드설정[상태.모드];
   document.getElementById("결과점수").textContent = `${점수글(상태.모드, 상태.점수)} / ${문항수}`;
   document.getElementById("결과안내").hidden = 설정.순위표;
+
+  const 다시풀기결과 = document.getElementById("다시풀기결과");
+  다시풀기결과.hidden = !상태.다시풀기중;
+  if (상태.다시풀기중) {
+    다시풀기결과.textContent = `다시 풀기: ${상태.출제목록.length}개 중 ${상태.다시풀기정답수}개 정답 (첫 판 점수는 그대로입니다)`;
+  }
+  const 남음 = 상태.오답목록.length > 0;
+  document.getElementById("다시풀기영역").hidden = !(설정.다시풀기 && 남음);
+  document.getElementById("다시풀기완료").hidden = !(설정.다시풀기 && 상태.다시풀기중 && !남음);
   화면보이기("결과");
 }
 
@@ -280,16 +295,32 @@ function 타이머끄기() {
 }
 
 // 위치가 null이면 시간 초과(오답). 이미 해설 중이면 두 번째 처리는 무시한다.
+// 다시 풀기 판은 첫 판 점수를 건드리지 않고 다시풀기정답수만 올린다.
 function 채점하기(위치) {
   if (상태.해설중) return;
   상태.해설중 = true;
   타이머끄기();
   const 문항 = 현재문항();
   const 맞힘 = 위치 !== null && 문항.보기[위치].정답여부;
-  const 획득점수 = 점수계산(상태.모드, 맞힘, 상태.힌트사용);
-  상태.점수 += 획득점수;
+  let 획득점수 = null;
+  if (상태.다시풀기중) {
+    if (맞힘) 상태.다시풀기정답수 += 1;
+  } else {
+    획득점수 = 점수계산(상태.모드, 맞힘, 상태.힌트사용);
+    상태.점수 += 획득점수;
+  }
   if (!맞힘) 상태.오답목록.push(문항);
   해설보이기(위치, 맞힘, 획득점수);
+}
+
+function 다시풀기시작() {
+  const 대상 = 상태.오답목록;
+  상태.출제목록 = 다시풀기판만들기(대상);
+  상태.오답목록 = [];            // 이번 다시 풀기에서 또 틀린 문항이 여기에 쌓인다
+  상태.현재번호 = 0;
+  상태.다시풀기중 = true;
+  상태.다시풀기정답수 = 0;
+  문제내기();
 }
 
 function 힌트쓰기() {
@@ -328,6 +359,7 @@ document.getElementById("다시하기버튼").addEventListener("click", () => �
 document.getElementById("처음으로버튼").addEventListener("click", 처음으로);
 document.getElementById("모드처음으로버튼").addEventListener("click", 처음으로);
 document.getElementById("힌트버튼").addEventListener("click", 힌트쓰기);
+document.getElementById("다시풀기버튼").addEventListener("click", 다시풀기시작);
 
 function 시작하기() {
   상태초기화();
