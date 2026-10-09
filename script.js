@@ -9,6 +9,12 @@ const 모드설정 = {
   힌트:   { 제한시간: null, 힌트: true,  맞힘점수: 1, 힌트후점수: 0.5,  순위표: true,  다시풀기: false },
 };
 
+const 모드설명 = {
+  연습:   "시간 제한도 힌트도 없이 편하게 풀어요. 틀린 문제만 다시 풀 수 있어요.",
+  스피드: "문항마다 15초! 시간이 지나면 오답이에요.",
+  힌트:   "문항마다 힌트 1번(오답 2개 지우기). 힌트를 쓰고 맞히면 0.5점이에요.",
+};
+
 // ② 순수 로직 (화면과 무관) ---------------------------------------------
 // 원본을 건드리지 않고 무작위로 섞은 새 배열을 돌려준다 (Fisher–Yates).
 function 섞기(배열) {
@@ -113,6 +119,30 @@ function 시작화면그리기() {
   화면보이기("시작");
 }
 
+function 모드화면그리기(카테고리) {
+  document.getElementById("모드제목").textContent = `${카테고리} — 모드를 고르세요`;
+  document.getElementById("모드버튼들").replaceChildren(...Object.keys(모드설정).map(모드 => {
+    const 버튼 = document.createElement("button");
+    버튼.type = "button";
+    버튼.className = "모드버튼";
+    const 이름 = document.createElement("strong");
+    이름.textContent = 모드;
+    const 규칙 = document.createElement("span");
+    규칙.className = "규칙";
+    규칙.textContent = 모드설명[모드];
+    버튼.append(이름, 규칙);
+    if (!모드설정[모드].순위표) {
+      const 안됨 = document.createElement("span");
+      안됨.className = "기록안됨";
+      안됨.textContent = "순위표에 기록되지 않음";
+      버튼.append(안됨);
+    }
+    버튼.addEventListener("click", () => 판시작(모드, 카테고리));
+    return 버튼;
+  }));
+  화면보이기("모드");
+}
+
 function 오류화면그리기(오류목록) {
   document.getElementById("오류목록").replaceChildren(...오류목록.map(문장 => {
     const 항목 = document.createElement("li");
@@ -187,7 +217,7 @@ function 결과그리기() {
 
 // ⑥ 이벤트와 시작 -----------------------------------------------------
 function 카테고리선택(카테고리) {
-  판시작("연습", 카테고리);
+  모드화면그리기(카테고리);
 }
 
 function 판시작(모드, 카테고리) {
@@ -252,6 +282,7 @@ document.getElementById("다음버튼").addEventListener("click", 다음으로);
 document.getElementById("그만하기버튼").addEventListener("click", 그만하기);
 document.getElementById("다시하기버튼").addEventListener("click", () => 판시작(상태.모드, 상태.카테고리));
 document.getElementById("처음으로버튼").addEventListener("click", 처음으로);
+document.getElementById("모드처음으로버튼").addEventListener("click", 처음으로);
 
 function 시작하기() {
   상태초기화();
